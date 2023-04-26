@@ -8,11 +8,13 @@ import com.compose.pegination.domain.model.Beers
 
 @Dao
 interface BeersDao {
+
     @Upsert
     suspend fun UpsertAll(beers: List<BeersEntity>)
-    @Query("SELECT * FROM beerentity")
+
+    @Query("SELECT * FROM beersentity")
     fun pagingSource(): PagingSource<Int, BeersEntity>
 
-    @Query("DELETE FROM beerentity")
+    @Query("DELETE FROM beersentity")
     suspend fun clearAll()
 }

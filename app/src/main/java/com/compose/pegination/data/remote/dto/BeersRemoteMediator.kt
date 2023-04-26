@@ -7,13 +7,15 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.compose.pegination.data.local.BeersDatabase
 import com.compose.pegination.data.local.BeersEntity
-import com.compose.pegination.data.local.toBeerEntity
+import com.compose.pegination.data.local.toBeersEntity
+import kotlinx.coroutines.delay
 import okio.IOException
 import retrofit2.HttpException
 
 @OptIn(ExperimentalPagingApi::class)
 class BeersRemoteMediator(
-    private val beersdb: BeersDatabase,
+
+    private val beersDb: BeersDatabase,
     private val punServices: PunServices
 
 ): RemoteMediator<Int, BeersEntity>() {
@@ -38,16 +40,17 @@ class BeersRemoteMediator(
                     }
                 }
             }
+            delay(2000L)
             val beers = punServices.getBeers(
                 page = loadKey,
                 pageCount =  state.config.pageSize
             )
-            beersdb.withTransaction {
+            beersDb.withTransaction {
                 if (loadType == LoadType.REFRESH) {
-                    beersdb.dao.clearAll()
+                    beersDb.dao.clearAll()
                 }
-                val beersEntity = beers.map{it.toBeerEntity()}
-                beersdb.dao.UpsertAll(beersEntity)
+                val beersEntity = beers.map{it.toBeersEntity()}
+                beersDb.dao.UpsertAll(beersEntity)
             }
 
             MediatorResult.Success(
